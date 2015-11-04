@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class BranchNode { 
     public static GameObject _debug_prisePrefab;
-    public static byte _debug_maxIteration = 8;
+    public static byte _debug_maxIteration = 5;
     public static byte _debug_currentIteration = 0;
 
     static List<Vector3[]> _rays = new List<Vector3[]>();

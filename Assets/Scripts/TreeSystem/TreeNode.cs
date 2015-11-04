@@ -18,10 +18,10 @@ public class TreeNode : MonoBehaviour {
     void Update() {
         _startNode.DisplayBranchs();
     }
-
+    
     IEnumerator Grow(BranchNode node) {
         BranchNode._debug_currentIteration = 0;
-        float delay = 1f;
+        float delay = 0.5f;
         float time = delay;
         while (BranchNode._debug_currentIteration < BranchNode._debug_maxIteration) {
             time = Mathf.MoveTowards(time, 0, Time.fixedDeltaTime);

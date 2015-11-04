@@ -1,11 +1,11 @@
 fileFormatVersion: 2
 guid: 2529c6ccd7c8fed4895d9449360b0c72
-timeCreated: 1446500907
+timeCreated: 1446589281
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
-  - _debug_prisePrefab: {fileID: 138686, guid: 93c2a6bc4e22b424fbe5f1bce8c09c05, type: 2}
+  - _debug_prisePrefab: {fileID: 118334, guid: f57e6723170d8b549a4b23b4ba144b0c, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
