@@ -9,13 +9,16 @@ public class TreeNode2 : MonoBehaviour {
     public TreeNode2 _origine;
     public List<TreeNode2> _branchingNodes = new List<TreeNode2>();
 
+    Node _node;
+
     [Header("Duration")]
-    public float _prewarmDuration = 1f;
+    public float _prewarmSpeed = 1f;
+    float _prewarmDuration = 1f;
     public float _growinDuration = 1f;
 
     public float _size = 0f;
     public byte _rank = 10;
-    float _sizeByRank = 0.1f;
+    public float _sizeByRank = 0.2f;
 
     [HideInInspector]
     public Vector3 _direction;
@@ -40,6 +43,9 @@ public class TreeNode2 : MonoBehaviour {
         _rank = rank;
         _size = 0;
 
+        // Calculate prewarm duration
+        _prewarmDuration = Vector3.Distance(position, origine.transform.position) / _prewarmSpeed;
+
         // Set feedback
         SetRank();
         SetBranch();
@@ -52,10 +58,18 @@ public class TreeNode2 : MonoBehaviour {
         _origine = origine;
         _rank = rank;
         _size = 0;
-        _sizeByRank = 0.1f;
         _direction = position - origine.transform.position;
         _direction.z = 0;
         _direction.Normalize();
+
+        // Calculate prewarm duration
+        _prewarmDuration = Vector3.Distance(position, origine.transform.position) / _prewarmSpeed;
+
+        // Spawn node on banch
+        _node = Instantiate(TreeSystem2._debug_staticNodePrefab).GetComponent<Node>();
+        _node.transform.parent = TreeSystem2._debug_staticNodeContainer;
+        _node.transform.position = new Vector3(position.x, position.y, 0);
+        _node._treeNode = this;
 
         // Set feedback
         SetRank();
@@ -63,10 +77,9 @@ public class TreeNode2 : MonoBehaviour {
     }
 
     public void Grow() {
-        Debug.Log("Grow" + this);
         if (_state == State.GROWING_FINALIZED) {
             _size = Mathf.MoveTowards(_size, ((float)_rank) * _sizeByRank, _sizeByRank);
-            Debug.Log(((float)_rank) * _sizeByRank);
+            Debug.Log("Debug : Rank = " +_rank+ " - SbR = " +_sizeByRank + " - Rank * SbR = " +(_rank * _sizeByRank));
             if (_branchingNodes.Count <= 0) {
                 MakeBranchs();
             } else if (_rank > 2) {
@@ -80,28 +93,30 @@ public class TreeNode2 : MonoBehaviour {
     }
 
     public void MakeBranchs() {
-        int newBrachRank = _rank - 1;
+        int newBrachRank = _rank;
+
+        // Spawn main branches
+        
+        Vector3 position = transform.position + (Quaternion.Euler(Vector3.forward * Random.Range(-20, 20)) * _direction * Random.Range(4f, 10f));
+        AddBranch(position,newBrachRank);
+
+
+        newBrachRank = _rank - 1;
         if (newBrachRank < 1)
             return;
 
-        for (int i = 0; i < 3; i++) {
-            AddBranch((byte)newBrachRank);
-        }
+        position = transform.position + (Quaternion.Euler(Vector3.forward * Random.Range(-40, -20)) * _direction * Random.Range(4f, 10f));
+        AddBranch(position, newBrachRank);
+
+        position = transform.position + (Quaternion.Euler(Vector3.forward * Random.Range(20, 40)) * _direction * Random.Range(4f, 10f));
+        AddBranch(position, newBrachRank);
     }
 
-    public void AddBranch(byte rank) {
-        Vector3 position = transform.position + (Quaternion.Euler(Vector3.forward * Random.Range(-45, 45)) * _direction * Random.Range(5f, 10f));
-        /*
-        Vector3 position = transform.position + new Vector3(
-            Random.Range(-5f, 5f),
-            Random.Range(2f, 5f),
-            0
-            );
-            */
+    public void AddBranch(Vector3 position, int rank) {
         GameObject newBranch = Instantiate(TreeSystem2._debug_staticTreeNodePrefab);
         newBranch.transform.position = position;
         TreeNode2 newBranchNode = newBranch.GetComponent<TreeNode2>();
-        newBranchNode.Set(position, this, rank);
+        newBranchNode.Set(position, this, (byte)rank);
         _branchingNodes.Add(newBranchNode);
     }
 
@@ -116,6 +131,9 @@ public class TreeNode2 : MonoBehaviour {
     }
 
     void Update() {
+        // Update feedback
+        UpdateBranch();
+
         // Update state
         switch (_state) {
             case State.PREWARMING:
@@ -148,9 +166,6 @@ public class TreeNode2 : MonoBehaviour {
                 break;
         }
 
-        // Update feedback
-        UpdateBranch();
-
 
         // Debug
         Debug.DrawRay(transform.position, _direction, Color.red);
@@ -174,8 +189,8 @@ public class TreeNode2 : MonoBehaviour {
     void SetBranch() {
         if (_origine != null) {
             // Calculate speeds
-            _feedback_positionSpeed = Vector3.Distance(_origine.transform.position, transform.position) / _prewarmDuration;
-            _feedback_scaleSpeed = (1-0) / _prewarmDuration;
+            _feedback_positionSpeed = _prewarmSpeed;
+            _feedback_scaleSpeed = (1-0) / _growinDuration;
             // Set size
             transform.localScale = Vector3.zero;
             _feedback_growingWidth = 0;

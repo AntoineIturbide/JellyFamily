@@ -3,8 +3,17 @@ using System.Collections;
 
 public class TreeSystem2 : MonoBehaviour {
 
+    // Reff
+
     public GameObject _debug_treeNodePrefab;
     public static GameObject _debug_staticTreeNodePrefab;
+
+    public GameObject _debug_nodePrefab;
+    public static GameObject _debug_staticNodePrefab;
+
+    public Transform _debug_nodeContainer;
+    public static Transform _debug_staticNodeContainer;
+
 
     TreeNode2 _startNode;
 
@@ -12,13 +21,17 @@ public class TreeSystem2 : MonoBehaviour {
 
     void Awake() {
         TreeNode2._stopGrowing = false;
+
+        // Ref
         _debug_staticTreeNodePrefab = _debug_treeNodePrefab;
+        _debug_staticNodePrefab = _debug_nodePrefab;
+        _debug_staticNodeContainer = _debug_nodeContainer;
     }
 
     void Start() {
         SpawnFirstNode();
 
-        StartCoroutine("Grow", _startNode);
+        //StartCoroutine("Grow", _startNode);
     }
 
     void Update () {

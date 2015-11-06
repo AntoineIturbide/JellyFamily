@@ -7,6 +7,9 @@ public class Node : MonoBehaviour {
 
     /* SYSTEM */
 
+    // Tree system
+    public TreeNode2 _treeNode;
+
     // Connexion sytem
     public struct Connexion {
         // Connected node
@@ -43,6 +46,8 @@ public class Node : MonoBehaviour {
     public float _lifetime = 5f;
     // Current remaining lifetime of this node
     public float _currentLifetime = 5f;
+    // Current remaining lifetime of this node
+    public bool _doAge = true;
 
     // Unit on node system
     [Header("Unit on node system")]
@@ -147,6 +152,10 @@ public class Node : MonoBehaviour {
             // No relevant destination has been found
         } else {
             // A relevant destination has been found
+        }
+
+        if(_treeNode != null) {
+            _treeNode._askGrow = true;
         }
 
         // Return that it succesfully recieved the unit
@@ -320,7 +329,7 @@ public class Node : MonoBehaviour {
 
     void Update() {
         // Upate lifetime
-        if (!IsOccupied()) {
+        if ( _doAge && !IsOccupied()) {
             _currentLifetime = Mathf.MoveTowards(_currentLifetime, 0, Time.deltaTime);
             if (_currentLifetime <= 0) {
                 Destroy(gameObject);
